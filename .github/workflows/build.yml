@@ -35,14 +35,14 @@ jobs:
       - name: Apply patches
         shell: cmd
         run: |
-          powershell -NoProfile -ExecutionPolicy Bypass -File "${{ github.workspace }}\ja-build\patch_apptray.ps1" "${{ github.workspace }}"
+          python "${{ github.workspace }}\ja-build\patch_apptray.py" "${{ github.workspace }}"
           python "${{ github.workspace }}\ja-build\patch_config.py" "${{ github.workspace }}"
           python "${{ github.workspace }}\ja-build\patch_general.py" "${{ github.workspace }}"
           python "${{ github.workspace }}\ja-build\patch_ja_lang.py" "${{ github.workspace }}"
-          powershell -NoProfile -ExecutionPolicy Bypass -File "${{ github.workspace }}\ja-build\patch_clipboard.ps1" "${{ github.workspace }}"
+          python "${{ github.workspace }}\ja-build\patch_clipboard.py" "${{ github.workspace }}"
           python "${{ github.workspace }}\ja-build\patch_patron.py" "${{ github.workspace }}"
-          powershell -NoProfile -ExecutionPolicy Bypass -File "${{ github.workspace }}\ja-build\patch_parser.ps1" "${{ github.workspace }}"
-          powershell -NoProfile -ExecutionPolicy Bypass -File "${{ github.workspace }}\ja-build\patch_version.ps1" "${{ github.workspace }}"
+          python "${{ github.workspace }}\ja-build\patch_parser.py" "${{ github.workspace }}"
+          python "${{ github.workspace }}\ja-build\patch_version.py" "${{ github.workspace }}"
 
       - name: Build renderer
         shell: cmd
