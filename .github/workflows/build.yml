@@ -32,27 +32,17 @@ jobs:
           curl -L -o "${{ github.workspace }}\ja-build\poe1_trade_stats_ja.json" "https://jp.pathofexile.com/api/trade/data/stats"
           curl -L -o "${{ github.workspace }}\ja-build\poe1_items_ja.json" "https://jp.pathofexile.com/api/trade/data/items"
 
-      - name: Debug Config.ts before patch
-        shell: cmd
-        run: |
-          powershell -Command "Get-Content '${{ github.workspace }}\renderer\src\web\Config.ts' | Select-Object -Skip 150 -First 20"
-
       - name: Apply patches
         shell: cmd
         run: |
           powershell -NoProfile -ExecutionPolicy Bypass -File "${{ github.workspace }}\ja-build\patch_apptray.ps1" "${{ github.workspace }}"
-          powershell -NoProfile -ExecutionPolicy Bypass -File "${{ github.workspace }}\ja-build\patch_config.ps1" "${{ github.workspace }}"
+          python "${{ github.workspace }}\ja-build\patch_config.py" "${{ github.workspace }}"
           powershell -NoProfile -ExecutionPolicy Bypass -File "${{ github.workspace }}\ja-build\patch_general.ps1" "${{ github.workspace }}"
           python "${{ github.workspace }}\ja-build\patch_ja_lang.py" "${{ github.workspace }}"
           powershell -NoProfile -ExecutionPolicy Bypass -File "${{ github.workspace }}\ja-build\patch_clipboard.ps1" "${{ github.workspace }}"
           powershell -NoProfile -ExecutionPolicy Bypass -File "${{ github.workspace }}\ja-build\patch_patron.ps1" "${{ github.workspace }}"
           powershell -NoProfile -ExecutionPolicy Bypass -File "${{ github.workspace }}\ja-build\patch_parser.ps1" "${{ github.workspace }}"
           powershell -NoProfile -ExecutionPolicy Bypass -File "${{ github.workspace }}\ja-build\patch_version.ps1" "${{ github.workspace }}"
-
-      - name: Debug client-log.ts
-        shell: cmd
-        run: |
-          powershell -Command "Get-Content '${{ github.workspace }}\renderer\src\web\client-log\client-log.ts' | Select-Object -Skip 125 -First 30"
 
       - name: Build renderer
         shell: cmd
