@@ -48,14 +48,6 @@ def main():
     else:
         print("  [WARN] default language 'en' not found")
 
-    # ── 3. overlayKey のデフォルトを Shift+F1 に変更 ──────────────────
-    if "overlayKey: 'Shift + F1'" in content:
-        print("  [SKIP] overlayKey: already Shift + F1")
-    elif "overlayKey: 'Shift + Space'" in content:
-        content = content.replace("overlayKey: 'Shift + Space'", "overlayKey: 'Shift + F1'")
-        print("  [OK] overlayKey set to Shift + F1")
-        changed = True
-
     # ── 4. poeWebApi に ja ケースを追加 ───────────────────────────────
     if "case 'ja':" in content:
         print("  [SKIP] poeWebApi ja case: already exists")
