@@ -3,8 +3,11 @@ $f = "$RepoDir\renderer\src\web\Config.ts"
 $c = [IO.File]::ReadAllText($f, [Text.Encoding]::UTF8)
 
 # language型定義にjaを追加（重複チェック）
-if ($c -notmatch "language: 'en' \| 'ru' \| 'cmn-Hant' \| 'ko' \| 'ja'[^|]") {
+if (-not $c.Contains("'ko' | 'ja'")) {
     $c = $c.Replace("language: 'en' | 'ru' | 'cmn-Hant' | 'ko'", "language: 'en' | 'ru' | 'cmn-Hant' | 'ko' | 'ja'")
+    Write-Host "    Config.ts: language type ja added."
+} else {
+    Write-Host "    Config.ts: language type already has ja."
 }
 
 # overlayKeyのデフォルトをShift+F1に変更
@@ -19,7 +22,10 @@ if (-not $c.Contains("case 'ja': return 'www.pathofexile.com'")) {
         "    case 'ko': return 'poe.game.daum.net'",
         "    case 'ko': return 'poe.game.daum.net'`r`n    case 'ja': return 'www.pathofexile.com'"
     )
+    Write-Host "    Config.ts: ja case added."
+} else {
+    Write-Host "    Config.ts: ja case already exists."
 }
 
 [IO.File]::WriteAllText($f, $c, [Text.Encoding]::UTF8)
-Write-Host '    Done.'
+Write-Host "    Done."
