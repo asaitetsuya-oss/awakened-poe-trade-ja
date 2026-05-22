@@ -1,0 +1,100 @@
+name: Build Japanese APT
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - 'ja-build/**'
+      - '.github/workflows/build.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Fetch POE Japanese API data
+        shell: cmd
+        run: |
+          curl -L -o "${{ github.workspace }}\ja-build\poe1_trade_stats_ja.json" "https://jp.pathofexile.com/api/trade/data/stats"
+          curl -L -o "${{ github.workspace }}\ja-build\poe1_items_ja.json" "https://jp.pathofexile.com/api/trade/data/items"
+
+      - name: Apply patches
+        shell: cmd
+        run: |
+          powershell -NoProfile -ExecutionPolicy Bypass -File "${{ github.workspace }}\ja-build\patch_apptray.ps1" "${{ github.workspace }}"
+          powershell -NoProfile -ExecutionPolicy Bypass -File "${{ github.workspace }}\ja-build\patch_config.ps1" "${{ github.workspace }}"
+          powershell -NoProfile -ExecutionPolicy Bypass -File "${{ github.workspace }}\ja-build\patch_general.ps1" "${{ github.workspace }}"
+          powershell -NoProfile -ExecutionPolicy Bypass -File "${{ github.workspace }}\ja-build\patch_ja_lang.ps1" "${{ github.workspace }}"
+          python "${{ github.workspace }}\ja-build\fix_client_log.py" "${{ github.workspace }}"
+          powershell -NoProfile -ExecutionPolicy Bypass -File "${{ github.workspace }}\ja-build\patch_clipboard.ps1" "${{ github.workspace }}"
+          powershell -NoProfile -ExecutionPolicy Bypass -File "${{ github.workspace }}\ja-build\patch_patron.ps1" "${{ github.workspace }}"
+          powershell -NoProfile -ExecutionPolicy Bypass -File "${{ github.workspace }}\ja-build\patch_parser.ps1" "${{ github.workspace }}"
+          powershell -NoProfile -ExecutionPolicy Bypass -File "${{ github.workspace }}\ja-build\patch_version.ps1" "${{ github.workspace }}"
+
+      - name: Build renderer
+        shell: cmd
+        env:
+          DATA_DIR: ${{ github.workspace }}\renderer\public\data
+          JA_DIR: ${{ github.workspace }}\renderer\public\data\ja
+        run: |
+          cd /d "${{ github.workspace }}\renderer"
+          call npm install
+          if not exist "%JA_DIR%" mkdir "%JA_DIR%"
+          copy /Y "${{ github.workspace }}\ja-build\ja_app_i18n.json" "%JA_DIR%\app_i18n.json"
+          copy /Y "${{ github.workspace }}\ja-build\client_strings.js" "%JA_DIR%\client_strings.js"
+          call npm run make-index-files
+          python "${{ github.workspace }}\ja-build\translate_items.py" "%DATA_DIR%" "${{ github.workspace }}\ja-build\poe1_items_ja.json"
+          python "${{ github.workspace }}\ja-build\translate_stats.py" "%DATA_DIR%" "${{ github.workspace }}\ja-build\poe1_trade_stats_ja.json"
+          call npm run make-index-files
+          call npm run build
+
+      - name: Build main
+        shell: cmd
+        run: |
+          cd /d "${{ github.workspace }}\main"
+          call npm install
+          call npm run build
+          call npm run package
+
+      - name: Get version
+        id: version
+        shell: pwsh
+        run: |
+          $v = (Get-Content "${{ github.workspace }}\main\package.json" | ConvertFrom-Json).version
+          echo "VERSION=$v" >> $env:GITHUB_OUTPUT
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.version.outputs.VERSION }}-ja
+          name: v${{ steps.version.outputs.VERSION }} (日本語版)
+          body: |
+            POE1日本語クライアント対応ビルド
+
+            ### インストール
+            - `Setup *.exe` → インストーラー版
+            - `*.exe`（Setupなし） → ポータブル版
+
+            ### 更新内容
+            - POE1日本語クライアント対応
+            - MODフィルター日本語表示
+            - アノイントオイル価格表示
+          files: |
+            main/dist/Awakened PoE Trade Setup *.exe
+            main/dist/Awakened PoE Trade *.exe
+          draft: false
+          prerelease: false
