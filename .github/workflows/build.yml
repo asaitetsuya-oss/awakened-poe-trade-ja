@@ -45,6 +45,11 @@ jobs:
           powershell -NoProfile -ExecutionPolicy Bypass -File "${{ github.workspace }}\ja-build\patch_parser.ps1" "${{ github.workspace }}"
           powershell -NoProfile -ExecutionPolicy Bypass -File "${{ github.workspace }}\ja-build\patch_version.ps1" "${{ github.workspace }}"
 
+      - name: Debug client-log.ts
+        shell: cmd
+        run: |
+          type "${{ github.workspace }}\renderer\src\web\client-log\client-log.ts"
+
       - name: Build renderer
         shell: cmd
         env:
