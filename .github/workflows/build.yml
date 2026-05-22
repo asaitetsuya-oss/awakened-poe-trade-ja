@@ -32,6 +32,11 @@ jobs:
           curl -L -o "${{ github.workspace }}\ja-build\poe1_trade_stats_ja.json" "https://jp.pathofexile.com/api/trade/data/stats"
           curl -L -o "${{ github.workspace }}\ja-build\poe1_items_ja.json" "https://jp.pathofexile.com/api/trade/data/items"
 
+      - name: Debug Config.ts before patch
+        shell: cmd
+        run: |
+          powershell -Command "Get-Content '${{ github.workspace }}\renderer\src\web\Config.ts' | Select-Object -Skip 150 -First 20"
+
       - name: Apply patches
         shell: cmd
         run: |
