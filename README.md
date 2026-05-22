@@ -1,27 +1,35 @@
-# ![Awakener's Orb](https://web.poecdn.com/image/Art/2DItems/Currency/TransferOrb.png) Awakened PoE Trade
+# Awakened PoE Trade 日本語版
 
-[![](https://user-images.githubusercontent.com/4292308/153364874-dde23599-278c-4350-8d86-dadbc4b978b3.svg)](https://somsubhra.github.io/github-release-stats/?username=SnosMe&repository=awakened-poe-trade)
-[![](https://user-images.githubusercontent.com/4292308/153364769-e4fe1e82-1bbc-46ac-8a3c-f5a98a5667cc.svg)](https://patreon.com/awakened_poe_trade)
-[![](https://user-images.githubusercontent.com/4292308/153364565-7a545d26-e617-4a33-a919-ff90d8feda3d.svg)](https://github.com/SnosMe/awakened-poe-trade/issues/22)
+[Awakened PoE Trade](https://github.com/SnosMe/awakened-poe-trade) の非公式日本語対応フォークです。
 
+## 元リポジトリとの違い
 
-➡ [Download for Windows & Linux](https://snosme.github.io/awakened-poe-trade/download) ⬅
+| 項目 | 元リポジトリ | このフォーク |
+|------|------------|------------|
+| 対応クライアント言語 | 英語・ロシア語・中国語繁体字など | + **日本語**対応 |
+| MOD表示 | 英語のみ | 日本語で表示 |
+| アイテム名 | 英語のみ | 日本語で表示 |
+| アノイントオイル | 英語のみ | 日本語で表示 |
+| デフォルトオーバーレイキー | Shift + Space | Shift + F1 |
+| ビルド | 手動 | GitHub Actionsで自動ビルド・リリース |
 
-## Tool showcase
+データは POE1 日本語版トレードAPI（`jp.pathofexile.com`）から自動取得しています。
 
-| Gem | Rare | Unique | Currency |
-|-----|------|--------|----------|
-| ![](https://i.imgur.com/LTsH2DZ.png) | ![](https://i.imgur.com/2XL5Wl8.png) | ![](https://i.imgur.com/UTV6prE.png) | ![](https://i.imgur.com/dQ9Sns6.png) |
+## ダウンロード
 
-### Development
+[Releases](../../releases) から最新版をダウンロードしてください。
 
-Follow instructions similar to CI [.github/workflows/main.yml](https://github.com/SnosMe/awakened-poe-trade/blob/master/.github/workflows/main.yml)
+- `Awakened PoE Trade Setup *.exe` → インストーラー版（推奨）
+- `Awakened PoE Trade *.exe`（Setupなし） → ポータブル版
 
-### Acknowledgments
+## 注意事項
 
-- [libuiohook](https://github.com/kwhat/libuiohook)
-- [RePoE](https://github.com/brather1ng/RePoE)
-- [poeprices.info](https://www.poeprices.info/)
-- [poe.ninja](https://poe.ninja/)
+- POE1 日本語クライアント専用です。POE2には対応していません。
+- 元リポジトリの更新に追従する形で随時ビルドを更新します。
+- 翻訳が完全でないMODは英語のまま表示されます。
+- 本フォークは非公式です。元リポジトリへの不具合報告はしないでください。
 
-![](https://i.imgur.com/MATqhv7.png)
+## 関連リンク
+
+- 元リポジトリ: [SnosMe/awakened-poe-trade](https://github.com/SnosMe/awakened-poe-trade)
+- POE1 日本語トレードサイト: [jp.pathofexile.com/trade](https://jp.pathofexile.com/trade)
