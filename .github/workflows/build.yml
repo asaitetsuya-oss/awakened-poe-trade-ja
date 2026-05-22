@@ -14,15 +14,15 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.2
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v4.4.0
         with:
           node-version: '22'
 
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v5.6.0
         with:
           python-version: '3.12'
 
@@ -81,7 +81,7 @@ jobs:
           echo "VERSION=$v" >> $env:GITHUB_OUTPUT
 
       - name: Create Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v2.3.2
         with:
           tag_name: v${{ steps.version.outputs.VERSION }}-ja
           name: v${{ steps.version.outputs.VERSION }} (日本語版)
@@ -94,8 +94,7 @@ jobs:
 
             ### 更新内容
             - POE1日本語クライアント対応
-            - MODフィルター日本語表示
-            - アノイントオイル価格表示
+            - タスクメニュー日本語化
           files: |
             main/dist/Awakened PoE Trade Setup *.exe
             main/dist/Awakened PoE Trade *.exe
