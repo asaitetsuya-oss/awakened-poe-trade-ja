@@ -94,8 +94,7 @@ jobs:
 
             ### 更新内容
             - POE1日本語クライアント対応
-            - MODフィルター日本語表示
-            - アノイントオイル価格表示
+            
           files: |
             main/dist/Awakened PoE Trade Setup *.exe
             main/dist/Awakened PoE Trade *.exe
