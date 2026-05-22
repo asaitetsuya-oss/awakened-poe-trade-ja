@@ -38,17 +38,11 @@ jobs:
           powershell -NoProfile -ExecutionPolicy Bypass -File "${{ github.workspace }}\ja-build\patch_apptray.ps1" "${{ github.workspace }}"
           powershell -NoProfile -ExecutionPolicy Bypass -File "${{ github.workspace }}\ja-build\patch_config.ps1" "${{ github.workspace }}"
           powershell -NoProfile -ExecutionPolicy Bypass -File "${{ github.workspace }}\ja-build\patch_general.ps1" "${{ github.workspace }}"
-          powershell -NoProfile -ExecutionPolicy Bypass -File "${{ github.workspace }}\ja-build\patch_ja_lang.ps1" "${{ github.workspace }}"
-          python "${{ github.workspace }}\ja-build\fix_client_log.py" "${{ github.workspace }}"
+          python "${{ github.workspace }}\ja-build\patch_ja_lang.py" "${{ github.workspace }}"
           powershell -NoProfile -ExecutionPolicy Bypass -File "${{ github.workspace }}\ja-build\patch_clipboard.ps1" "${{ github.workspace }}"
           powershell -NoProfile -ExecutionPolicy Bypass -File "${{ github.workspace }}\ja-build\patch_patron.ps1" "${{ github.workspace }}"
           powershell -NoProfile -ExecutionPolicy Bypass -File "${{ github.workspace }}\ja-build\patch_parser.ps1" "${{ github.workspace }}"
           powershell -NoProfile -ExecutionPolicy Bypass -File "${{ github.workspace }}\ja-build\patch_version.ps1" "${{ github.workspace }}"
-
-      - name: Debug client-log.ts
-        shell: cmd
-        run: |
-          type "${{ github.workspace }}\renderer\src\web\client-log\client-log.ts"
 
       - name: Build renderer
         shell: cmd
