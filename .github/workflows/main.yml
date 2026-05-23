@@ -92,7 +92,7 @@ jobs:
     needs: renderer
     strategy:
       matrix:
-        os: [windows-2022, ubuntu-22.04, macos-14]
+        os: [windows-2022]
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -132,15 +132,6 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Show hash (Windows)
-        if: startsWith(matrix.os, 'windows')
+      - name: Show hash
         run: type upstream\main\dist\latest.yml
         shell: cmd
-
-      - name: Show hash (Linux)
-        if: startsWith(matrix.os, 'ubuntu')
-        run: cat upstream/main/dist/latest-linux.yml
-
-      - name: Show hash (macOS)
-        if: startsWith(matrix.os, 'macos')
-        run: cat upstream/main/dist/latest-mac.yml
