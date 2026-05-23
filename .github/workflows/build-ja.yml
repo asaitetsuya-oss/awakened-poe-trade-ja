@@ -1,0 +1,154 @@
+name: Build JA
+
+on:
+  push:
+    branches:
+      - 'l10n_master'
+    paths:
+      - 'build-ja/**'
+      - '.github/workflows/build-ja.yml'
+    tags-ignore:
+      - '**'
+  workflow_dispatch:
+
+jobs:
+  # ────────────────────────────────────────────────
+  # Step 1: renderer ビルド（Ubuntu）
+  # ────────────────────────────────────────────────
+  renderer:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout (ja repo / this repo)
+        uses: actions/checkout@v4
+
+      - name: Clone upstream awakened-poe-trade
+        run: git clone --depth=1 https://github.com/SnosMe/awakened-poe-trade.git upstream
+
+      - name: Apply patches
+        run: python3 build-ja/patch_all.py upstream
+
+      - name: Place Japanese UI files
+        run: |
+          mkdir -p upstream/renderer/public/data/ja
+          cp build-ja/ja_app_i18n.json  upstream/renderer/public/data/ja/app_i18n.json
+          cp build-ja/client_strings.js upstream/renderer/public/data/ja/client_strings.js
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: npm install (renderer)
+        run: npm ci
+        working-directory: upstream/renderer
+
+      - name: Seed ja ndjson from en
+        run: |
+          EN=upstream/renderer/public/data/en
+          JA=upstream/renderer/public/data/ja
+          [ ! -f "$JA/items.ndjson" ] && cp "$EN/items.ndjson" "$JA/items.ndjson" || true
+          [ ! -f "$JA/stats.ndjson" ] && cp "$EN/stats.ndjson" "$JA/stats.ndjson" || true
+
+      - name: make-index-files (1st pass)
+        run: npm run make-index-files
+        working-directory: upstream/renderer
+
+      - name: Translate items
+        run: |
+          if [ -f build-ja/poe1_items_ja.json ]; then
+            python3 build-ja/translate_items.py upstream/renderer/public/data build-ja/poe1_items_ja.json
+          else
+            python3 build-ja/translate_items.py upstream/renderer/public/data
+          fi
+
+      - name: Fetch trade stats ja
+        run: |
+          if [ ! -f build-ja/poe1_trade_stats_ja.json ]; then
+            echo "Fetching from jp.pathofexile.com ..."
+            curl -fsSL \
+              -H "User-Agent: awakened-poe-trade-ja-builder/1.0" \
+              -o build-ja/poe1_trade_stats_ja.json \
+              "https://jp.pathofexile.com/api/trade/data/stats"
+          fi
+
+      - name: Translate stats
+        run: |
+          python3 build-ja/translate_stats.py \
+            upstream/renderer/public/data \
+            build-ja/poe1_trade_stats_ja.json
+
+      - name: make-index-files (2nd pass)
+        run: npm run make-index-files
+        working-directory: upstream/renderer
+
+      - name: Build renderer
+        run: npm run build
+        working-directory: upstream/renderer
+
+      - name: Upload renderer dist
+        uses: actions/upload-artifact@v4
+        with:
+          name: renderer-dist
+          path: upstream/renderer/dist
+          retention-days: 1
+
+  # ────────────────────────────────────────────────
+  # Step 2: main パッケージング（Windows / Linux / macOS）
+  # ────────────────────────────────────────────────
+  package:
+    needs: renderer
+    strategy:
+      matrix:
+        os: [windows-2022, ubuntu-22.04, macos-14]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout (ja repo / this repo)
+        uses: actions/checkout@v4
+
+      - name: Clone upstream awakened-poe-trade
+        run: git clone --depth=1 https://github.com/SnosMe/awakened-poe-trade.git upstream
+        shell: bash
+
+      - name: Apply patches
+        run: python3 build-ja/patch_all.py upstream
+        shell: bash
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Download renderer dist
+        uses: actions/download-artifact@v4
+        with:
+          name: renderer-dist
+          path: upstream/renderer/dist
+
+      - name: npm install (main)
+        run: npm ci
+        working-directory: upstream/main
+
+      - name: Build main
+        run: npm run build
+        working-directory: upstream/main
+
+      - name: Package
+        run: npm run package -- -p onTagOrDraft
+        working-directory: upstream/main
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Show hash (Windows)
+        if: startsWith(matrix.os, 'windows')
+        run: type upstream\main\dist\latest.yml
+        shell: cmd
+
+      - name: Show hash (Linux)
+        if: startsWith(matrix.os, 'ubuntu')
+        run: cat upstream/main/dist/latest-linux.yml
+
+      - name: Show hash (macOS)
+        if: startsWith(matrix.os, 'macos')
+        run: cat upstream/main/dist/latest-mac.yml
