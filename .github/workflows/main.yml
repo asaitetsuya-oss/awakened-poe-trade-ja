@@ -107,14 +107,13 @@ jobs:
         run: python3 build-ja/patch_all.py upstream
         shell: bash
 
-      - name: Fix electron-builder publish target
+      - name: Fix publish target (package.json repository)
         run: |
-          $yml = Get-Content upstream\main\electron-builder.yml -Raw
-          $yml = $yml -replace 'owner: SnosMe', 'owner: asaitetsuya-oss'
-          $yml = $yml -replace 'repo: awakened-poe-trade', 'repo: awakened-poe-trade-ja'
-          Set-Content upstream\main\electron-builder.yml $yml -NoNewline
-          Write-Host "--- electron-builder.yml after patch ---"
-          Get-Content upstream\main\electron-builder.yml
+          $pkg = Get-Content upstream\main\package.json -Raw | ConvertFrom-Json
+          $pkg.repository.url = 'https://github.com/asaitetsuya-oss/awakened-poe-trade-ja.git'
+          $pkg | ConvertTo-Json -Depth 10 | Set-Content upstream\main\package.json
+          Write-Host "repository.url is now:"
+          ($pkg.repository.url)
         shell: pwsh
 
       - name: Setup Node.js
