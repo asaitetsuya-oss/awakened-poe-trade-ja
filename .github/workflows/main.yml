@@ -1,14 +1,6 @@
 name: Build JA
 
 on:
-  push:
-    branches:
-      - 'l10n_master'
-    paths:
-      - 'build-ja/**'
-      - '.github/workflows/build-ja.yml'
-    tags:
-      - 'v*'
   workflow_dispatch:
 
 jobs:
