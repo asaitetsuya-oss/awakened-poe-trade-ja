@@ -5,7 +5,7 @@ on:
 
 jobs:
   # ────────────────────────────────────────────────
-  # Step 1: renderer ビルド（Ubuntu）
+  # Step 1: renderer ビルド
   # ────────────────────────────────────────────────
   renderer:
     runs-on: ubuntu-latest
@@ -86,7 +86,7 @@ jobs:
           retention-days: 1
 
   # ────────────────────────────────────────────────
-  # Step 2: main パッケージング（Windows / Linux / macOS）
+  # Step 2: main パッケージング（Windows）
   # ────────────────────────────────────────────────
   package:
     needs: renderer
@@ -125,6 +125,17 @@ jobs:
       - name: Build main
         run: npm run build
         working-directory: upstream/main
+
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: build-${{ github.run_number }}
+          name: Build ${{ github.run_number }}
+          draft: false
+          prerelease: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Package
         run: npm run package -- -p always
