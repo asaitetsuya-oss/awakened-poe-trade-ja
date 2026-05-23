@@ -87,7 +87,7 @@ jobs:
         working-directory: upstream/renderer
 
       - name: Upload renderer dist
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: renderer-dist
           path: upstream/renderer/dist
@@ -121,7 +121,7 @@ jobs:
           node-version: '20'
 
       - name: Download renderer dist
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: renderer-dist
           path: upstream/renderer/dist
