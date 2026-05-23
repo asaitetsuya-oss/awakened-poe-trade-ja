@@ -5,7 +5,7 @@ on:
 
 jobs:
   # ────────────────────────────────────────────────
-  # Step 1: renderer ビルド
+  # Step 1: renderer ビルド（Ubuntu）
   # ────────────────────────────────────────────────
   renderer:
     runs-on: ubuntu-latest
@@ -86,7 +86,7 @@ jobs:
           retention-days: 1
 
   # ────────────────────────────────────────────────
-  # Step 2: main パッケージング（Windows）
+  # Step 2: main パッケージング（Windows / Linux / macOS）
   # ────────────────────────────────────────────────
   package:
     needs: renderer
@@ -106,6 +106,16 @@ jobs:
       - name: Apply patches
         run: python3 build-ja/patch_all.py upstream
         shell: bash
+
+      - name: Fix electron-builder publish target
+        run: |
+          $yml = Get-Content upstream\main\electron-builder.yml -Raw
+          $yml = $yml -replace 'owner: SnosMe', 'owner: asaitetsuya-oss'
+          $yml = $yml -replace 'repo: awakened-poe-trade', 'repo: awakened-poe-trade-ja'
+          Set-Content upstream\main\electron-builder.yml $yml -NoNewline
+          Write-Host "--- electron-builder.yml after patch ---"
+          Get-Content upstream\main\electron-builder.yml
+        shell: pwsh
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
