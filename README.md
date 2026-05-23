@@ -1,7 +1,8 @@
 # Awakened PoE Trade 日本語版
 
-[Awakened PoE Trade](https://github.com/SnosMe/awakened-poe-trade) の非公式日本語対応フォークです。
-EE2の実装を参考にしました。
+[Awakened PoE Trade](https://github.com/SnosMe/awakened-poe-trade) の非公式日本語対応フォークです。  
+
+EE2の実装を参考にしました。タスクバーのメニューを日本語したのでほぼ日本人向けの仕様になります。
 
 ## 元リポジトリとの違い
 
