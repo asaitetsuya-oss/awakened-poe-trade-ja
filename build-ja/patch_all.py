@@ -208,6 +208,17 @@ def main():
         return c, 'base_item text removed, icon will show'
     patch('PriceTrend.vue', os.path.join(R, 'renderer', 'src', 'web', 'price-check', 'trends', 'PriceTrend.vue'), patch_price_trend)
 
+
+    # 13. electron-builder.yml: publish先を自分のリポジトリに変更
+    def patch_electron_builder(c):
+        import re
+        if 'asaitetsuya-oss' in c:
+            return c, 'already patched'
+        c = re.sub(r'owner: SnosMe', 'owner: asaitetsuya-oss', c)
+        c = re.sub(r'repo: awakened-poe-trade', 'repo: awakened-poe-trade-ja', c)
+        return c, 'publish target changed to asaitetsuya-oss/awakened-poe-trade-ja'
+    patch('electron-builder.yml', os.path.join(R, 'main', 'electron-builder.yml'), patch_electron_builder)
+
     print("All patches applied.")
 
 if __name__ == '__main__':
